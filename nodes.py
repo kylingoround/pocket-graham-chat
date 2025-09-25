@@ -71,11 +71,15 @@ class ChunkEssaysNode(BatchNode):
     """Break essays into contextual chunks with citation metadata"""
     
     def prep(self, shared):
-        return shared["essays"]
-    
-    def exec(self, essay):
         chunk_size = shared.get("config", {}).get("chunk_size", 500)
         chunk_overlap = shared.get("config", {}).get("chunk_overlap", 100)
+        return [
+            (essay, chunk_size, chunk_overlap)
+            for essay in shared["essays"]
+        ]
+    
+    def exec(self, item):
+        essay, chunk_size, chunk_overlap = item
         return chunk_text(essay, chunk_size, chunk_overlap)
     
     def post(self, shared, prep_res, exec_res_list):
